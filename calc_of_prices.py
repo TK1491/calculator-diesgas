@@ -1,5 +1,6 @@
 import streamlit as st
 import time
+
 # Funksionet kryesore
 
 def calculate_price(platts, premium, base_density, day_density):
@@ -81,7 +82,21 @@ st.session_state.preset_premium = st.sidebar.number_input(
     key="preset_premium_input"
 )
 
-col1, col2 = st.columns(2, gap="small")
+# Mobile view adjustments via custom CSS
+st.markdown("""
+    <style>
+        /* Adjust column width for smaller screens */
+        @media only screen and (max-width: 768px) {
+            .stColumn {
+                flex: 0 1 45% !important;
+                margin: 5px;
+            }
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+# Adjust the column layout for mobile by setting column widths
+col1, col2 = st.columns([1, 1], gap="small")  # Set both columns to have equal width
 
 # Nafta
 with col1:
