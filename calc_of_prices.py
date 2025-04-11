@@ -53,8 +53,8 @@ eur_usd = round(all_eur / all_usd, 6) if all_usd > 0 and all_eur > 0 else None
 if usd_eur and eur_usd:
     st.sidebar.caption(f"USD/EUR: {usd_eur:.6f}")
     st.sidebar.caption(f"EUR/USD: {eur_usd:.6f}")
-usd_eur = round(all_usd / all_eur, 4) if all_usd > 0 and all_eur > 0 else None
-eur_usd = round(all_eur / all_usd, 4) if all_usd > 0 and all_eur > 0 else None
+usd_eur = round(all_usd / all_eur, 6) if all_usd > 0 and all_eur > 0 else None
+eur_usd = round(all_eur / all_usd, 6) if all_usd > 0 and all_eur > 0 else None
 
 # Cilësime për densitetet
 st.session_state.default_diesel_density = st.sidebar.number_input(
@@ -101,10 +101,15 @@ with col1:
         diesel_price = diesel_final
         diesel_premium_calc = calculate_premium(diesel_final, diesel_platts, diesel_density, 0.8450)
 
-    st.subheader(f"Çmimi për ton: {round(diesel_price + 0.00001, 2):,.2f} $/MT" if diesel_price else "Çmimi për ton: - $/MT")
+    # Calculate price in EUR by multiplying the price in USD by the USD/EUR rate
     if diesel_price and usd_eur:
-        diesel_price_eur = round(diesel_price * usd_eur, 2)
-        st.caption(f"Çmimi për ton në EUR: {round(diesel_price_eur + 0.00001, 2):,.2f} €/MT")
+        diesel_price_eur = diesel_price * usd_eur
+        diesel_price_eur_display = f"{diesel_price_eur:.2f}"  # Format to 2 decimal places
+    else:
+        diesel_price_eur_display = "-"
+    
+    st.subheader(f"Çmimi për ton: {diesel_price + 0.00001:.2f} $/MT" if diesel_price else "Çmimi për ton: - $/MT")
+    st.caption(f"Çmimi për ton në EUR: {diesel_price_eur_display} €/MT")
     st.caption(f"Premium i llogaritur: {diesel_premium_calc if diesel_premium_calc else '-'} $")
 
 # Benzina
@@ -125,10 +130,15 @@ with col2:
         gasoline_price = gasoline_final
         gasoline_premium_calc = calculate_premium(gasoline_final, gasoline_platts, gasoline_density, 0.7550)
 
-    st.subheader(f"Çmimi për ton: {round(gasoline_price + 0.00001, 2):,.2f} $/MT" if gasoline_price else "Çmimi për ton: - $/MT")
+    # Calculate price in EUR by multiplying the price in USD by the USD/EUR rate
     if gasoline_price and usd_eur:
-        gasoline_price_eur = round(gasoline_price * usd_eur, 2)
-        st.caption(f"Çmimi për ton në EUR: {round(gasoline_price_eur + 0.00001, 2):,.2f} €/MT")
+        gasoline_price_eur = gasoline_price * usd_eur
+        gasoline_price_eur_display = f"{gasoline_price_eur:.2f}"  # Format to 2 decimal places
+    else:
+        gasoline_price_eur_display = "-"
+    
+    st.subheader(f"Çmimi për ton: {gasoline_price + 0.00001:.2f} $/MT" if gasoline_price else "Çmimi për ton: - $/MT")
+    st.caption(f"Çmimi për ton në EUR: {gasoline_price_eur_display} €/MT")
     st.caption(f"Premium i llogaritur: {gasoline_premium_calc if gasoline_premium_calc else '-'} $")
 
 # Tabela shtesë poshtë kolones Nafta dhe Benzina
@@ -190,8 +200,9 @@ with st.container():
             if all([diesel_platts > 0, diesel_density > 0, usd_eur > 0]):
                 val = calculate_price(diesel_platts, prem, 0.8450, diesel_density)
                 val_eur = val * usd_eur
-                val_eur = int(val_eur * 100) / 100
-                st.markdown(f"{val_eur:,.2f}")
+                # Format the EUR price with exactly two decimal places (without rounding)
+                val_eur_display = f"{val_eur:.2f}"
+                st.markdown(f"{val_eur_display}")
             else:
                 st.markdown("-")
     with col3_eur:
@@ -200,8 +211,9 @@ with st.container():
             if gasoline_platts and gasoline_density and usd_eur:
                 val = calculate_price(gasoline_platts, 60, 0.7550, gasoline_density)
                 val_eur = val * usd_eur
-                val_eur = int(val_eur * 100) / 100
-                st.markdown(f"{val_eur:,.2f}")
+                # Format the EUR price with exactly two decimal places (without rounding)
+                val_eur_display = f"{val_eur:.2f}"
+                st.markdown(f"{val_eur_display}")
             else:
                 st.markdown("-")
 
